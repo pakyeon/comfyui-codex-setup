@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+tools/
+connection.json
+*.backup-*
+.DS_Store
