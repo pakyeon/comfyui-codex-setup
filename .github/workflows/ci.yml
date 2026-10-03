@@ -1,0 +1,26 @@
+name: Windows and macOS checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        python: ['3.10', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -r requirements-tools.txt
+      - run: python -m unittest -v
+      - run: python setup.py --help
+      - name: Validate macOS shell wrapper
+        if: runner.os == 'macOS'
+        run: sh -n setup.sh && sh setup.sh --help
+      - name: Validate Windows wrapper
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./setup.ps1 -PythonPath (Get-Command python).Source --help
